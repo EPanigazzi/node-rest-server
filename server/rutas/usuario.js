@@ -2,16 +2,25 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const _ = require("underscore");
 const Usuario = require("../modelos/usuario");
+const { verificaToken, verificaAdmin_Role } = require("../middlewares/autentificacion");
 const app = express();
 
-app.get("/usuario", function (req, res) {
+app.get("/usuario", verificaToken, (req, res) => {
+    // verificaToken no va con () porque no la estiy llamando sino que solo estoy diciendo que se va disparar en esa ruta
+
+    // return res.json({
+    //     usuario: req.usuario,
+    //     nombre: req.usuario.nombre,
+    //     email: req.usuario.email,
+    // });
+
     let desde = req.query.desde || 0;
     desde = Number(desde);
 
     let limite = req.query.limite || 5;
     limite = Number(limite);
 
-    Usuario.find({estado:true}, "nombre email role estado google img") // segundo argumento los campos que quiero mostrar
+    Usuario.find({ estado: true }, "nombre email role estado google img") // segundo argumento los campos que quiero mostrar
         .skip(desde)
         .limit(limite)
         .exec((err, usuarios) => {
@@ -22,7 +31,7 @@ app.get("/usuario", function (req, res) {
                 });
             }
 
-            Usuario.count({estado:true}, (err, conteo) => {
+            Usuario.countDocuments({ estado: true }, (err, conteo) => {
                 res.json({
                     ok: true,
                     usuarios,
@@ -32,7 +41,7 @@ app.get("/usuario", function (req, res) {
         });
 });
 
-app.post("/usuario", function (req, res) {
+app.post("/usuario", [verificaToken,verificaAdmin_Role],function (req, res) {
     const body = req.body;
 
     const usuario = new Usuario({
@@ -61,7 +70,7 @@ app.post("/usuario", function (req, res) {
     });
 });
 
-app.put("/usuario/:id", function (req, res) {
+app.put("/usuario/:id", [verificaToken,verificaAdmin_Role],function (req, res) {
     const id = req.params.id;
     const body = _.pick(req.body, ["nombre", "email", "img", "role", "estado"]);
 
@@ -85,7 +94,7 @@ app.put("/usuario/:id", function (req, res) {
     );
 });
 
-app.delete("/usuario/:id", function (req, res) {
+app.delete("/usuario/:id", [verificaToken,verificaAdmin_Role], function (req, res) {
     const id = req.params.id;
 
     // BORRADO FISICO
