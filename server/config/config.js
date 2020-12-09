@@ -38,3 +38,11 @@ if (process.env.NODE_ENV === "dev") {
 }
 // enviroment inventado para usar en server.js
 process.env.URLDB = urlDB;
+
+// ===================
+// GOOGLE CLIENT ID
+//====================
+
+process.env.CLIENT_ID =
+    process.env.CLIENT_ID ||
+    "801244957720-c6jje2gmf5pj8sp0g34elimb8shn7jkn.apps.googleusercontent.com";
