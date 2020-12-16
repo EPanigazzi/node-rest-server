@@ -80,9 +80,9 @@ app.get("/producto/:id", (req, res) => {
 app.get("/producto/buscar/:termino", verificaToken, (req, res) => {
     const termino = req.params.termino;
 
-    const regex = new RegExp(termino, 'i');
+    const regex = new RegExp(termino, "i");
 
-    Producto.find({nombre: regex})
+    Producto.find({ nombre: regex })
         .populate("categoria", "nombre")
         .exec((err, productos) => {
             if (err) {
@@ -216,3 +216,7 @@ app.delete("/producto/:id", verificaToken, (req, res) => {
 });
 
 module.exports = app;
+
+
+
+
